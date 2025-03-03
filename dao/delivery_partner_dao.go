@@ -6,6 +6,12 @@ import (
 	"log"
 )
 
+type DeliveryPartnerDAOInterface interface {
+	InsertDeliveryPartner(partner model.DeliveryPartner) error
+	UpdateDeliveryPartnerStatus(partnerID int, status string) error
+	GetAvailableDeliveryPartnersByCity(city string) ([]model.DeliveryPartner, error)
+}
+
 type DeliveryPartnerDAO struct {
 	db *sql.DB
 }

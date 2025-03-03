@@ -8,8 +8,16 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
+type DeliveryAssignmentProducerInterface interface {
+	ProduceAssignmentMessage(orderID int64, deliveryPartnerID int) error
+}
+
+type KafkaProducerInterface interface {
+	Produce(msg *kafka.Message, deliveryChan chan kafka.Event) error
+}
+
 type DeliveryAssignmentProducer struct {
-	Producer *kafka.Producer
+	Producer KafkaProducerInterface
 	Topic    string
 }
 
@@ -22,6 +30,7 @@ func NewDeliveryAssignmentProducer(broker, topic string) (*DeliveryAssignmentPro
 	return &DeliveryAssignmentProducer{Producer: p, Topic: topic}, nil
 }
 
+// ProduceAssignmentMessage produces a Kafka message
 func (p *DeliveryAssignmentProducer) ProduceAssignmentMessage(orderID int64, deliveryPartnerID int) error {
 	message := map[string]interface{}{
 		"order_id":            orderID,

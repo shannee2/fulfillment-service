@@ -1,4 +1,4 @@
-package service
+package location
 
 import (
 	"math"

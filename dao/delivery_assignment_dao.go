@@ -6,6 +6,10 @@ import (
 	"log"
 )
 
+type DeliveryAssignmentDAOInterface interface {
+	InsertDeliveryAssignment(assignment model.DeliveryAssignment) (int, error)
+}
+
 type DeliveryAssignmentDAO struct {
 	db *sql.DB
 }
