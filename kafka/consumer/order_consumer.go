@@ -2,33 +2,28 @@ package consumer
 
 import (
 	"fmt"
+	"fulfillment/config"
+	"fulfillment/service/order_fulfillment"
 	"log"
-	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
-// KafkaConsumerInterface abstracts the Kafka consumer methods
-type KafkaConsumerInterface interface {
-	SubscribeTopics(topics []string, rebalanceCb kafka.RebalanceCb) error
-	ReadMessage(timeout time.Duration) (*kafka.Message, error)
-}
-
-// OrderServiceInterface abstracts the order fulfillment service
-type OrderServiceInterface interface {
-	ProcessOrder(orderJson []byte)
-}
-
 type OrderConsumer struct {
-	Consumer     KafkaConsumerInterface
-	OrderService OrderServiceInterface
+	Consumer     *kafka.Consumer
+	OrderService *order_fulfillment.OrderService
 }
 
-func NewOrderConsumer(consumer KafkaConsumerInterface, orderService OrderServiceInterface) *OrderConsumer {
+func NewOrderConsumer(broker string, groupID string, orderService *order_fulfillment.OrderService) (*OrderConsumer, error) {
+	consumer, err := config.NewKafkaConsumer(broker, groupID)
+	if err != nil {
+		return nil, err
+	}
+
 	return &OrderConsumer{
 		Consumer:     consumer,
 		OrderService: orderService,
-	}
+	}, nil
 }
 
 func (c *OrderConsumer) Start(topic string) {
